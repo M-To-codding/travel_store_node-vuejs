@@ -1,5 +1,5 @@
 const express = require('express');
-const server = express();
+const path = require('path');
 const Vue = require('vue');
 const renderer = require('vue-server-renderer');
 const HTMLStream = require('vue-ssr-html-stream');
@@ -7,41 +7,32 @@ const bodyParser = require('body-parser');
 const router = require('express').Router();
 
 
-// require('./server/api-routes/router');
+let template = require('fs').readFileSync(path.join(__dirname, './server/ui/admin/dist/index.ssr.html'), 'utf-8');
+let clientManifest = require('./server/ui/admin/dist/vue-ssr-client-manifest.json');
+let serverBundle = require('./server/ui/admin/dist/vue-ssr-server-bundle.json');
 
-server.use(bodyParser.json());
-
-let template = require('fs').readFileSync('./src/server/ui/admin/dist/index.ssr.html', 'utf-8')
-let clientManifest = require('./server/ui/admin/dist/vue-ssr-client-manifest.json')
+const server = express();
 
 const bundleRenderer = renderer.createBundleRenderer(
-    require('./server/ui/admin/dist/vue-ssr-server-bundle.json'),
+    serverBundle,
     {
         runInNewContext: false,
         template,
-        clientManifest
+        clientManifest,
+        inject: false
     }
-)
+);
 
-server.use('/server/ui/admin/dist', express.static('dist'));
+server.use('/dist', express.static(path.join(__dirname, '/ui/admin/dist')));
 
 server.get('*', (req, res) => {
 
-    const context = {url: req.path, title: 'Dashboard'}
+    const context = {url: req.path, title: 'Dashboard'};
 
-    bundleRenderer
-        .renderToStream(context)
-        .pipe(new HTMLStream({context, template}))
-        .pipe(res);
-
-    // console.log(res)
-
-    bundleRenderer.renderToString(context, (err, html) => {
-        console.log(html)
-    //     res.end(html)
+    bundleRenderer.renderToString(context, (err, html)=>{
+        res.end(html);
     })
 
-    // res.status(200).end();
 })
 
 
