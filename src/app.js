@@ -7,11 +7,15 @@ const bodyParser = require('body-parser');
 const router = require('express').Router();
 
 
+
+const server = express();
+
+
+server.use(express.static(path.join(__dirname, './server/ui/admin/dist/')));
+
 let template = require('fs').readFileSync(path.join(__dirname, './server/ui/admin/dist/index.ssr.html'), 'utf-8');
 let clientManifest = require('./server/ui/admin/dist/vue-ssr-client-manifest.json');
 let serverBundle = require('./server/ui/admin/dist/vue-ssr-server-bundle.json');
-
-const server = express();
 
 const bundleRenderer = renderer.createBundleRenderer(
     serverBundle,
@@ -22,8 +26,6 @@ const bundleRenderer = renderer.createBundleRenderer(
         inject: false
     }
 );
-
-server.use('/dist', express.static(path.join(__dirname, '/ui/admin/dist')));
 
 server.get('*', (req, res) => {
 
