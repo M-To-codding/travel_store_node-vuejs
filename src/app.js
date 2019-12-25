@@ -6,8 +6,10 @@ const HTMLStream = require('vue-ssr-html-stream');
 const bodyParser = require('body-parser');
 const router = require('express').Router();
 
+const mongoose = require('mongoose');
 
 
+const db = require('./server/config/db')(mongoose);
 const server = express();
 
 
