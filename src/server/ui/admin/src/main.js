@@ -1,8 +1,18 @@
-import Vue from 'vue'
-import App from './App.vue'
-import {createRouter} from './router'
+import Vue from 'vue';
+import App from './App.vue';
+import {createRouter} from './router';
+// import vuetify from '@/plugins/vuetify';
+import Vuetify from 'vuetify';
 
-Vue.config.productionTip = false
+Vue.use(Vuetify);
+
+
+const opts = {};
+
+const vuetify = new Vuetify(opts);
+
+
+Vue.config.productionTip = false;
 
 export async function createApp({
                                     beforeApp = () => {
@@ -11,23 +21,27 @@ export async function createApp({
                                     }
                                 } = {}) {
 
-    const router = createRouter()
-
+    const router = createRouter();
 
     await beforeApp({
         router,
+        vuetify,
 
     })
 
+    router.afterEach((to) => {
+        if (!to.name) { return }
+    });
+
     const app = new Vue({
         router,
+        vuetify,
         render: h => h(App)
     })
 
     const result = {
         app,
         router,
-
 
     }
 

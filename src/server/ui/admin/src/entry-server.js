@@ -14,13 +14,21 @@ export default context => {
       router,
     } = await createApp()
 
+
     router.push(prepareUrlForRouting(context.url))
+
+    const matchedComponents = router.getMatchedComponents();
+
+    if (!matchedComponents.length) {
+      return reject(new Error(404));
+    }
 
     router.onReady(() => {
       context.rendered = () => {
-
+        // eslint-disable-next-line no-console
+        // console.log(context);
       }
-      resolve(app)
+     return resolve(app)
     }, reject)
   })
 }
