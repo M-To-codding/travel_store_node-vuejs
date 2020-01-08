@@ -12,14 +12,9 @@
                 <LeftSideNav :links="links"/>
             </div>
 
-            <v-content>
-
-                <v-container
-                        fluid
-                >
-
-                    <router-view/>
-                </v-container>
+            <v-content
+                    id="main-content">
+                <router-view/>
             </v-content>
 
             <v-footer app>
@@ -87,7 +82,4 @@
         color: #42b983;
     }
 
-    .container {
-        padding: 50px;
-    }
 </style>
