@@ -19,6 +19,7 @@
                 :items="usersData"
                 :items-per-page="5"
                 class="elevation-1"
+                item-key="_id"
         >
 
 
@@ -46,15 +47,32 @@
                                 <v-container>
                                     <v-row>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.name" label="User name"></v-text-field>
+                                            <v-text-field
+                                                    ref="name"
+                                                    v-model="editedItem.name"
+                                                    :rules="fieldsValidation.name"
+                                                    label="User name"
+                                                    required></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.email" label="User email"></v-text-field>
+                                            <v-text-field
+                                                    ref="email"
+                                                    v-model="editedItem.email"
+                                                    :rules="fieldsValidation.email"
+                                                    label="User email"
+                                                    required></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.registered" label="Date of registration"></v-text-field>
-                                        </v-col>
 
+                                            <v-select
+                                                    ref="role"
+                                                    v-model="editedItem.role"
+                                                    :items="roles"
+                                                    label="Select role"
+                                                    :rules="fieldsValidation.role"
+                                            ></v-select>
+
+                                        </v-col>
                                     </v-row>
                                 </v-container>
                             </v-card-text>
@@ -118,6 +136,9 @@
                         text: 'Name', value: 'name',
                     },
                     {
+                        text: 'Role', value: 'role',
+                    },
+                    {
                         text: 'Email', value: 'email',
                     },
                     {
@@ -128,16 +149,26 @@
                 usersData: [],
                 editedItem: {
                     name: '',
+                    role: '',
                     email: '',
-                    registered: new Date()
                 },
                 defaultItem: {
                     name: '',
+                    role: '',
                     email: '',
                     registered: new Date()
                 },
                 dialog: false,
                 editedIndex: -1,
+                roles: ['author', 'admin'],
+                adminExists: false,
+                fieldsValidation: {
+                    name: [() => !!this.editedItem.name || 'This field is required'],
+                    email: [() => !!this.editedItem.email || 'This field is required'],
+                    role: [() => !!this.editedItem.role || 'This field is required']
+                },
+                errorMessages: '',
+                formHasErrors: false
             }
         },
 
@@ -162,27 +193,45 @@
         methods: {
 
             prepareDataForTable() {
-                let options = {};
+                this.usersData = [];
+                this.adminExists = false;
+                this.roles = ['author', 'admin'];
 
                 this.users.forEach((user, index) => {
+                    let options = {};
+                    if (user.role === 'admin') {
+                        this.adminExists = true;
+                        this.roles = ['author'];
+                    }
 
                     this.editedItem.id = index + 1;
                     options.id = index + 1;
-                    options.name = user.name + ' (' + user.role + ')';
+                    options._id = user._id;
+                    options.role = user.role;
+                    options.name = user.name;
                     options.email = user.email;
                     options.registered = user.createdAt;
 
 
                     this.usersData.push(options);
                 })
+                // eslint-disable-next-line no-console
+                console.log(this.usersData)
             },
 
             getAllUsers() {
 
                 userCRUD.getAllUsers(axios).then((res) => {
-                    this.users = res;
+                    if (res.respType != 'empty') {
+                        this.users = res;
+                    } else {
+                        // eslint-disable-next-line no-console
+                        console.log('empty users list');
+                    }
                 }).then(() => {
-                    this.prepareDataForTable();
+                    if (this.users) {
+                        this.prepareDataForTable();
+                    }
                 });
             },
 
@@ -191,20 +240,50 @@
 
                 this.editedItem = Object.assign({}, this.defaultItem);
                 this.editedIndex = -1;
+
+                this.resetForm();
             },
 
             saveUser() {
-                if(this.editedIndex > -1) {
+                this.formHasErrors = false;
+
+                Object.keys(this.editedItem).forEach(f => {
+                    // eslint-disable-next-line no-console
+                    console.log('key', f)
+                    if (!this.editedItem[f]) {
+                        this.formHasErrors = true;
+                    }
+
+                    if (this.$refs[f]) {
+                        this.$refs[f].validate(true);
+                    }
+                });
+
+                if (this.formHasErrors) {
+                    return;
+                }
+
+                if (this.editedIndex > -1) {
                     Object.assign(this.usersData[this.editedIndex], this.editedItem);
-                } else {
 
                     userCRUD.updateUser(axios, this.editedItem).then((res) => {
                         this.users = res;
                     }).then(() => {
                         this.getAllUsers();
                     });
+
+                } else {
+
+                    userCRUD.createUser(axios, this.editedItem).then((res) => {
+                        this.users = res;
+                    }).then(() => {
+                        this.getAllUsers();
+                    });
                 }
+
+                this.close();
             },
+
             editUser(item) {
                 // eslint-disable-next-line no-console
                 console.log('item', item);
@@ -213,11 +292,32 @@
                 this.editedItem = Object.assign({}, item)
                 this.dialog = true
             },
-            deleteUser(id, name = 'User') {
-                let result = confirm(`Confirm deleting user ${name}`);
-                return result;
-            }
 
+            deleteUser(item) {
+                let result = confirm(`Confirm deleting user ${item.name}`);
+
+                // eslint-disable-next-line no-console
+                console.log('item', item)
+                if (result) {
+                    userCRUD.deleteUser(axios, item).then(() => {
+                        this.getAllUsers();
+                    })
+                }
+
+                return result;
+            },
+
+            resetForm() {
+                this.errorMessages = [];
+                this.formHasErrors = false;
+
+                Object.keys(this.editedItem).forEach(f => {
+                    if (this.$refs[f]) {
+                        this.$refs[f].reset()
+                    }
+                })
+
+            }
         }
     }
 </script>
