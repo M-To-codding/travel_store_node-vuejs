@@ -20,8 +20,9 @@ server.use(bodyParser.json());
 server.use(express.static(path.join(__dirname, './server/ui/admin/dist/')));
 server.use('/static', express.static(path.join(__dirname, './server/ui/admin/dist/')));
 server.use((req, res, next)=>{
-    res.header("Access-Control-Allow-Origin", "http://localhost:8000");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
     next();
 })
 

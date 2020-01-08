@@ -7,6 +7,12 @@ let getAllUsers = (req, res) => {
     User.find({}, (err, docs) => {
         // mongoose.disconnect();
 
+        if(docs.length === 0) {
+            console.log(res.body, res.data)
+            return res.status(200).send({respType: 'empty', message: 'Users not found'});
+
+        }
+
         if (err) {
             return console.error('error', err);
         }
@@ -16,8 +22,9 @@ let getAllUsers = (req, res) => {
 };
 
 let createUser = (req, res) => {
+    console.log('req', req.body)
 
-    const user = new User(req.user);
+    const user = new User(req.body);
 
     user.save((err) => {
 
@@ -32,7 +39,7 @@ let createUser = (req, res) => {
 };
 
 let updateUser = (req, res) => {
-    User.updateOne({_id: req.body.id}, req.body, function (err, result) {
+    User.updateOne({_id: req.params.id}, req.body, function (err, result) {
 
         if (err) {
             return console.error(err);
@@ -44,7 +51,8 @@ let updateUser = (req, res) => {
 };
 
 let deleteUser = (req, res) => {
-    User.findOneAndDelete({_id: req.id}, (err, result) => {
+    console.log(req.body, req.params)
+    User.findOneAndDelete({_id: req.params.id}, (err, result) => {
         if (err) {
             console.error(err);
         }
