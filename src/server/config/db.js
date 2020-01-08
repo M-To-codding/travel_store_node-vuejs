@@ -4,8 +4,10 @@ module.exports = (mongoose) => {
 
     mongoose.connect(process.env.DB_HOST,
         {
-            // username: process.env.DB_USER,
-            password: process.env.DB_PASSrs,
+            // dbName: process.env.DB_NAME,
+            // user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            useCreateIndex: true,
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
