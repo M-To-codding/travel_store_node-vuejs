@@ -6,7 +6,7 @@
                 clipped
         >
             <ul>
-                <li
+                <v-list-item
                         class="list-item"
                         v-for="(item, i) in links"
                         :key="'path-'+i"
@@ -17,7 +17,7 @@
                     <v-icon :class="[item.icon]">{{ item.icon }}</v-icon>
                     {{item.name}}
 
-                </li>
+                </v-list-item>
             </ul>
         </v-navigation-drawer>
 
@@ -30,6 +30,30 @@
                 {{currentPageTitle}}
                 Dashboard
             </v-toolbar-title>
+
+            <v-spacer></v-spacer>
+
+            <v-menu
+                    left
+                    bottom
+            >
+                <template v-slot:activator="{ on }">
+                    <v-btn icon v-on="on">
+                        <v-icon>mdi-account</v-icon>
+                    </v-btn>
+                </template>
+
+                <v-list>
+                    <v-list-item
+                            v-for="n in 2"
+                            :key="n"
+                            @click="() => {}"
+                    >
+                        <v-list-item-title>Option {{ n }}</v-list-item-title>
+                    </v-list-item>
+                </v-list>
+            </v-menu>
+
         </v-app-bar>
 
     </div>
@@ -38,7 +62,6 @@
 
 <script>
     import Vuetify from 'vuetify';
-    // import {VListItem, VListItemTitle, VListItemContent} from "vuetify/lib";
 
     export default {
         vuetify: new Vuetify({
@@ -52,6 +75,7 @@
         }),
         methods: {
             goToPage(path) {
+                this.drawer = !this.drawer;
                 this.$router.push(path);
             }
         },
@@ -61,9 +85,6 @@
             currentPageTitle: String
         },
         components: {
-            // 'v-list-item': VListItem,
-            // 'v-list-item-title': VListItemTitle,
-            // 'v-list-item-content': VListItemContent,
         },
 
     }
