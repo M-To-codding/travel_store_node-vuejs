@@ -6,6 +6,9 @@ import Vuetify from 'vuetify';
 
 Vue.use(Vuetify);
 
+require('vuetify/dist/vuetify.css');
+// require('vuetify/dist/vuetify.js');
+
 
 const opts = {};
 
