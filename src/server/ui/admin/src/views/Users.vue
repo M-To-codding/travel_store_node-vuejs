@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
 
     <v-container
             fluid
@@ -19,7 +19,7 @@
                 :items="usersData"
                 :items-per-page="5"
                 class="elevation-1"
-                item-key="_id"
+                item-key="id"
         >
 
 
@@ -106,10 +106,6 @@
                 </v-btn>
 
             </template>
-            <!--            <template v-slot:no-data>-->
-            <!--                <v-btn color="primary" @click="initialize">Reset</v-btn>-->
-            <!--            </template>-->
-
 
         </v-data-table>
     </v-container>
@@ -130,7 +126,7 @@
                         text: 'All users',
                         align: 'left',
                         sortable: false,
-                        value: 'id',
+                        value: 'index',
                     },
                     {
                         text: 'Name', value: 'name',
@@ -204,9 +200,9 @@
                         this.roles = ['author'];
                     }
 
-                    this.editedItem.id = index + 1;
-                    options.id = index + 1;
-                    options._id = user._id;
+                    this.editedItem.index = index + 1;
+                    options.index = index + 1;
+                    options.id = user._id;
                     options.role = user.role;
                     options.name = user.name;
                     options.email = user.email;

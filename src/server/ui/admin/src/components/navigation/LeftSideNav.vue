@@ -10,7 +10,6 @@
                         class="list-item"
                         v-for="(item, i) in links"
                         :key="'path-'+i"
-                        avatar
                         @click="goToPage(item.path)"
                 >
 
