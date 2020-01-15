@@ -38,10 +38,11 @@ function deleteUser(axios, user) {
     });
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export const userCRUD = {
+const userCRUD = {
   getAllUsers,
   createUser,
   updateUser,
   deleteUser,
 };
+
+export default userCRUD;
