@@ -153,7 +153,8 @@
           name: '',
           role: '',
           email: '',
-          password: ''
+          password: '',
+          isAdmin: false
         },
         defaultItem: {
           name: '',
@@ -203,7 +204,8 @@
 
         this.users.forEach((user, index) => {
           let options = {};
-          if (user.role === 'admin') {
+
+          if (user.isAdmin) {
             this.adminExists = true;
             this.roles = ['author'];
           }
@@ -269,6 +271,12 @@
 
         if (this.editedIndex > -1) {
           Object.assign(this.usersData[this.editedIndex], this.editedItem);
+
+          if(this.editedItem.role === 'admin') {
+            this.editedItem.isAdmin = true;
+          } else {
+            this.editedItem.isAdmin = false;
+          }
 
           userCRUD.updateUser(axios, this.editedItem).then((res) => {
             this.users = res;
