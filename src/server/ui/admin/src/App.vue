@@ -1,85 +1,94 @@
 <template>
-    <div id="app">
+  <div id="app">
 
-        <v-app id="inspire">
-            <!--            <nav id="top-nav">-->
-            <!--                <router-link to="/">Home</router-link>-->
-            <!--                |-->
-            <!--                <router-link to="/users">Users</router-link>-->
-            <!--            </nav>-->
+    <v-app id="app-content">
 
-            <div id="nav">
-                <LeftSideNav :links="links"/>
-            </div>
+      <div id="nav" v-if="auth">
+        <LeftSideNav :links="links"/>
+      </div>
 
-            <v-content
-                    id="main-content">
-                <router-view/>
-            </v-content>
+      <v-content id="main-content">
+        <router-view/>
+      </v-content>
 
-            <v-footer app>
-                <span>&copy; 2019</span>
-            </v-footer>
+      <v-footer app>
+        <span>&copy; 2019</span>
+      </v-footer>
 
-        </v-app>
+    </v-app>
 
-    </div>
+  </div>
 </template>
 
 <script>
-    import LeftSideNav from './components/navigation/LeftSideNav';
-    import Vuetify from 'vuetify';
+  import LeftSideNav from './components/navigation/LeftSideNav';
+  import Vuetify from 'vuetify';
 
-    export default {
-        name: "Home",
+  export default {
+    name: "Home",
 
-        data() {
-            return {
-                pageTitle: '',
-                links: [{
-                    name: 'Dashboard',
-                    path: '/',
-                    icon: 'mdi-view-dashboard'
-                },
-                    {
-                        name: 'Users',
-                        path: '/users',
-                        icon: 'mdi-view-dashboard'
-                    },]
-            }
+    data() {
+      return {
+        auth: false,
+        pageTitle: '',
+        links: [{
+          name: 'Dashboard',
+          path: '/',
+          icon: 'mdi-view-dashboard'
         },
+          {
+            name: 'Users',
+            path: '/users',
+            icon: 'mdi-view-dashboard'
+          },]
+      }
+    },
 
-        vuetify: new Vuetify({
-            theme: {dark: true},
-        }),
+    created() {
+      if (!this.auth) {
+        this.$router.push('/sign-up');
+      }
 
-        components: {
-            LeftSideNav
-        }
+      this.checkAuth();
+    },
+
+    vuetify: new Vuetify({
+      theme: { dark: true },
+    }),
+
+    methods: {
+      checkAuth() {
+        this.auth = true;
+      }
+    },
+
+    components: {
+      LeftSideNav
     }
+  }
 </script>
 
 
 <style>
-    #app {
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-align: center;
-        color: #2c3e50;
-    }
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+  }
 
-    #top-nav {
-        padding: 30px;
-    }
+  #top-nav {
+    padding: 30px;
+  }
 
-    #top-nav a {
-        font-weight: bold;
-        color: #2c3e50;
-    }
+  #top-nav a {
+    font-weight: bold;
+    color: #2c3e50;
+  }
 
-    #top-nav a.router-link-exact-active {
-        color: #42b983;
-    }
+  #top-nav a.router-link-exact-active {
+    color: #42b983;
+  }
 
 </style>

@@ -1,17 +1,15 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div>
         <v-navigation-drawer
                 v-model="drawer"
                 app
-                clipped
-        >
+                clipped>
             <ul>
                 <v-list-item
                         class="list-item"
                         v-for="(item, i) in links"
                         :key="'path-'+i"
-                        @click="goToPage(item.path)"
-                >
+                        @click="goToPage(item.path)">
 
                     <v-icon :class="[item.icon]">{{ item.icon }}</v-icon>
                     {{item.name}}
@@ -44,11 +42,10 @@
 
                 <v-list>
                     <v-list-item
-                            v-for="n in 2"
-                            :key="n"
-                            @click="() => {}"
-                    >
-                        <v-list-item-title>Option {{ n }}</v-list-item-title>
+                            v-for="action in userActions"
+                            :key="action.name"
+                            @click="goToPage(action.path)">
+                        <v-list-item-title>{{ action.name }}</v-list-item-title>
                     </v-list-item>
                 </v-list>
             </v-menu>
@@ -69,7 +66,8 @@
 
         data: () => ({
             drawer: null,
-            model: 1
+            model: 1,
+            userActions: [{name: 'sign in', path: '/sign-in'},{name: 'sign up', path: '/sign-up'}, {name: 'sign out', path: '/sign-out'}]
 
         }),
         methods: {
