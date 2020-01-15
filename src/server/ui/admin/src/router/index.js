@@ -3,6 +3,8 @@ import VueRouter from 'vue-router';
 
 import Dashboard from '../views/Dashboard.vue';
 import Users from '../views/Users.vue';
+import SignUp from '../views/SignUp.vue';
+import SignIn from '../views/SignIn.vue';
 
 Vue.use(VueRouter);
 
@@ -17,6 +19,16 @@ export default function createRouter() {
       path: '/users',
       name: 'users',
       component: Users,
+    },
+    {
+      path: '/sign-up',
+      name: 'sign-up',
+      component: SignUp,
+    },
+    {
+      path: '/sign-in',
+      name: 'sign-in',
+      component: SignIn,
     },
   ];
 
