@@ -1,7 +1,5 @@
 module.exports = (mongoose, uniqueValidator) => {
 
-  const jwt = require('jsonwebtoken');
-
   let UserSchema = new mongoose.Schema({
       name: {
         type: String,
@@ -28,12 +26,6 @@ module.exports = (mongoose, uniqueValidator) => {
     });
 
   // UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
-
-
-  UserSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({_id: this._id, isAdmin: this.isAdmin}, config.get('myprivatekey')); //get the private key from the config file -> environment variable
-    return token;
-  }
 
 
   mongoose.model('User', UserSchema);

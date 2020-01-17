@@ -1,6 +1,7 @@
 module.exports = function (app, db) {
     const router = require('express').Router();
     const dbActions = require('./../services/db/actions');
+    const auth = require('./../services/auth');
 
 
     router.get("/", (req, res) => {
@@ -17,6 +18,10 @@ module.exports = function (app, db) {
         .delete(dbActions.deleteUser)
         .put(dbActions.updateUser);
 
+
+    router.post('/register', dbActions.register);
+
+    router.get('/singn-in', auth, dbActions.signIn);
 
     return router;
 };
