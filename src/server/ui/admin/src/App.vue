@@ -1,23 +1,23 @@
 <template>
-  <div id="app">
+    <div id="app">
 
-    <v-app id="app-content">
+        <v-app id="app-content">
 
-      <div id="nav" v-if="auth">
-        <LeftSideNav :links="links"/>
-      </div>
+            <div id="nav" v-if="auth">
+                <LeftSideNav :currentUser="user" :links="links" :auth="auth" :isAuthorized="isAuthorized"/>
+            </div>
 
-      <v-content id="main-content">
-        <router-view/>
-      </v-content>
+            <v-content id="main-content">
+                <router-view :isAuthorized="isAuthorized" :currentUser="user"/>
+            </v-content>
 
-      <v-footer app>
-        <span>&copy; 2019</span>
-      </v-footer>
+            <v-footer app>
+                <span>&copy; 2019</span>
+            </v-footer>
 
-    </v-app>
+        </v-app>
 
-  </div>
+    </div>
 </template>
 
 <script>
@@ -29,27 +29,41 @@
 
     data() {
       return {
+        token: null,
+        user: null,
+        role: null,
         auth: false,
         pageTitle: '',
         links: [{
           name: 'Dashboard',
           path: '/',
-          icon: 'mdi-view-dashboard'
+          icon: 'mdi-view-dashboard',
+          isAdmin: false
         },
           {
             name: 'Users',
             path: '/users',
-            icon: 'mdi-view-dashboard'
-          },]
+            icon: 'mdi-view-dashboard',
+            isAdmin: true
+          },
+        ]
       }
     },
 
     created() {
-      if (!this.auth) {
+    },
+
+    mounted() {
+      if (!this.isAuthorized() && this.$route.name !== 'sign-in') {
         this.$router.push('/sign-up');
+      } else {
+        this.receiveCurrentUserData();
       }
 
-      this.checkAuth();
+    },
+
+    updated() {
+      this.isAuthorized()
     },
 
     vuetify: new Vuetify({
@@ -57,9 +71,37 @@
     }),
 
     methods: {
-      checkAuth() {
-        this.auth = true;
-      }
+      isAuthorized() {
+        this.token = localStorage.getItem('user-token');
+
+        if (this.token) {
+          this.auth = true;
+          return true;
+        } else {
+          this.auth = false;
+          return false;
+        }
+      },
+
+      receiveCurrentUserData() {
+        const token = this.token;
+
+        if(token) {
+          const base64Url = token.split('.')[1];
+          const decodedValue = JSON.parse(window.atob(base64Url));
+
+          this.user = decodedValue;
+          console.log('decodedValue', decodedValue);
+        }
+      },
+    },
+
+    watch:{
+     $route(to, from) {
+       if(from.name === 'sign-in') {
+         this.receiveCurrentUserData();
+       }
+     }
     },
 
     components: {
@@ -70,25 +112,25 @@
 
 
 <style>
-  #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-  }
+    #app {
+        font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-align: center;
+        color: #2c3e50;
+    }
 
-  #top-nav {
-    padding: 30px;
-  }
+    #top-nav {
+        padding: 30px;
+    }
 
-  #top-nav a {
-    font-weight: bold;
-    color: #2c3e50;
-  }
+    #top-nav a {
+        font-weight: bold;
+        color: #2c3e50;
+    }
 
-  #top-nav a.router-link-exact-active {
-    color: #42b983;
-  }
+    #top-nav a.router-link-exact-active {
+        color: #42b983;
+    }
 
 </style>
