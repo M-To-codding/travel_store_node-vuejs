@@ -57,15 +57,15 @@
                           label="User email"
                           required></v-text-field>
                     </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                          ref="email"
-                          v-model="editedItem.password"
-                          :rules="fieldsValidation.password"
-                          label="User password"
-                          required></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
+<!--                    <v-col cols="12" sm="6" md="4">-->
+<!--                      <v-text-field-->
+<!--                          ref="email"-->
+<!--                          v-model="editedItem.password"-->
+<!--                          :rules="fieldsValidation.password"-->
+<!--                          label="User password"-->
+<!--                          required></v-text-field>-->
+<!--                    </v-col>-->
+<!--                    <v-col cols="12" sm="6" md="4">-->
 
                       <v-select
                           ref="role"
@@ -115,7 +115,7 @@
 </template>
 
 <script>
-  import userCRUD from './../actions/userCRUD';
+  import userCRUD from '../../actions/userCRUD';
 
   const axios = require('axios');
 
@@ -140,9 +140,9 @@
           {
             text: 'Email', value: 'email',
           },
-          {
-            text: 'Passw', value: 'password',
-          },
+          // {
+          //   text: 'Passw', value: 'password',
+          // },
           {
             text: 'Registered', value: 'registered',
           },
@@ -153,16 +153,16 @@
           name: '',
           role: '',
           email: '',
-          password: '',
-          isAdmin: false
+          // password: ''
         },
         defaultItem: {
           name: '',
           role: '',
           email: '',
           registered: new Date(),
-          password: ''
+          // password: ''
         },
+        sendItem:{},
         dialog: false,
         editedIndex: -1,
         roles: ['author', 'admin'],
@@ -175,6 +175,10 @@
         errorMessages: '',
         formHasErrors: false
       }
+    },
+
+    props:{
+      currentUser: Object
     },
 
     created() {
@@ -205,7 +209,8 @@
         this.users.forEach((user, index) => {
           let options = {};
 
-          if (user.isAdmin) {
+          if(user.isAdmin|| user.role === 'admin') {
+            user.isAdmin = true;
             this.adminExists = true;
             this.roles = ['author'];
           }
@@ -216,8 +221,13 @@
           options.role = user.role;
           options.name = user.name;
           options.email = user.email;
-          options.password = user.password;
+          // options.password = user.password;
           options.registered = user.createdAt;
+
+
+          if(this.currentUser._id === user._id) {
+            return;
+          }
 
           this.usersData.push(options);
         })
@@ -254,8 +264,7 @@
         this.formHasErrors = false;
 
         Object.keys(this.editedItem).forEach(f => {
-          // eslint-disable-next-line no-console
-          console.log('key', f)
+
           if (!this.editedItem[f]) {
             this.formHasErrors = true;
           }
@@ -292,6 +301,8 @@
             this.getAllUsers();
           });
         }
+
+          // this.sendItem = {};
 
         this.close();
       },

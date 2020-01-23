@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import Dashboard from '../views/Dashboard.vue';
-import Users from '../views/Users.vue';
+import Users from '../views/admin/Users.vue';
 import SignUp from '../views/SignUp.vue';
 import SignIn from '../views/SignIn.vue';
 
