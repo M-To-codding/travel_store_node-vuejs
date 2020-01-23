@@ -1,7 +1,7 @@
 module.exports = function (app, db) {
     const router = require('express').Router();
     const dbActions = require('./../services/db/actions');
-    const auth = require('./../services/auth');
+    const {auth} = require('./../services/auth');
 
 
     router.get("/", (req, res) => {
@@ -21,7 +21,8 @@ module.exports = function (app, db) {
 
     router.post('/register', dbActions.register);
 
-    router.get('/singn-in', auth, dbActions.signIn);
+    router.post('/sign-in', auth);
+    router.post('/sign-out', dbActions.signOut);
 
     return router;
 };

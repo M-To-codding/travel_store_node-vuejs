@@ -1,18 +1,37 @@
-const jwt = require("jsonwebtoken");
-const config = require("config");
+const jwt = require('jsonwebtoken');
+const config = require('config');
+const bcrypt = require('bcrypt');
+const dbActions = require("./db/actions");
+
+const { validateUser } = require('./../services/validation');
 
 
-module.exports = function(req, res, next) {
+exports.auth = async (req, res, next) => {
 
-  const token = req.headers["x-access-token"] || req.headers["authorization"];
-  if (!token) return res.status(401).send("Access denied. No token provided.");
+  const { error } = validateUser(req.body, true);
 
-  try {
-
-    const decoded = jwt.verify(token, config.get("myprivatekey"));
-    req.user = decoded;
-    next();
-  } catch (ex) {
-    res.status(400).send("Invalid token.");
+  if (error) {
+    return res.status(400).send(error.details[0].message);
   }
+
+  let user = await dbActions.findUserByParams({ email: req.body.email });
+  if (!user) {
+    return res.status(400).send({ message: 'Incorrect email or password.' });
+  }
+
+  const validPassword = await bcrypt.compare(req.body.password, user.password);
+  if (!validPassword) {
+    return res.status(400).send({ message: 'Incorrect email or password.' });
+  }
+
+  const token = jwt.sign({
+    _id: user._id,
+    email: user.email,
+    name: user.name,
+    is_admin: user.isAdmin
+  }, 'privateKey');
+
+  res.send({ token: token });
 };
+
+
