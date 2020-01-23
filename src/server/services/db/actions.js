@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
-const User = mongoose.model("User");
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
+const User = mongoose.model("User");
+const Token = mongoose.model("Token");
+const { validateUser } = require('./../../services/validation');
 
 
 let getAllUsers = (req, res) => {
@@ -8,10 +12,8 @@ let getAllUsers = (req, res) => {
   User.find({}, (err, docs) => {
     // mongoose.disconnect();
 
-    if (docs.length === 0) {
-      console.log(res.body, res.data)
+    if (docs && docs.length === 0) {
       return res.status(200).send({ respType: 'empty', message: 'Users not found' });
-
     }
 
     if (err) {
@@ -22,30 +24,54 @@ let getAllUsers = (req, res) => {
   })
 };
 
-let createUser = (req, res, signed) => {
-  console.log('req', req.body)
+let createUser = async (req, res, signed) => {
+  const data = {
+    name: req.body.name,
+    role: req.body.role || 'author',
+    email: req.body.email,
+    password: req.body.password,
+    isAdmin: req.body.isAdmin
+  }
 
-  const user = new User(req.body);
+  const { error } = validateUser(data);
 
-  user.save((err) => {
+  console.log('validation error', error)
 
-    if (err) {
-      return console.error(err);
-    }
+  let existedUser = await User.findOne({ email: data.email });
 
-    console.log('Saved', user);
+  if (existedUser) {
+    return res.status(400).send({ message: 'User already exists'});
+  } else {
 
-    res.status(200).send(user);
-  });
+    const user = new User(data);
 
-  if (signed) {
-    const token = user.generateAuthToken();
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
 
-    res.header('x-auth-token', token).send({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-    })
+    await user.save((err) => {
+
+      if (err) {
+        return console.error(err);
+      }
+
+      const token = jwt.sign({ _id: user._id }, 'privateKey');
+      new Token({
+        userEmail: data.email,
+        tokenKey: token,
+        deleted: false
+      }).save();
+
+      if(signed) {
+        let userClone = user;
+         userClone.password = req.body.password;
+
+        res.header('x-auth-token', token).send(userClone);
+      } else {
+        res.header('x-auth-token', token).send(user);
+      }
+
+      // res.status(200).send(user);
+    });
   }
 };
 
@@ -80,7 +106,7 @@ async function register(req, res) {
 
   let user = await User.findOne({ email: req.body.email });
   if (user) {
-    return res.status(400).send('User already registered');
+    return res.status(400).send({ message: 'User already registered'});
   }
 
   createUser(req, res, true);
@@ -88,20 +114,44 @@ async function register(req, res) {
 };
 
 async function signIn(req, res) {
-  const user = await User.findOne({_id: req.user._id}).select('-password');
+  const user = await User.findOne({ _id: req.user._id }).select('-password');
   User.methods.generateAuthToken = function () {
-    const token = jwt.sign({_id: this._id}, config.get('myprivatekey')); //get the private key from the config file -> environment variable
+    const token = jwt.sign({ _id: this._id }, config.get('privateKey')); //get the private key from the config file -> environment variable
     return token;
   }
   res.send(user);
 };
 
+async function findUserByParams(params) {
+  return await User.findOne(params);
+}
+
+async function signOut(req, res) {
+  console.log('req', req.body);
+  const token = await Token.updateOne({ tokenKey: req.body.token.tokenKey }, { deleted: true });
+
+  console.log('token', token);
+  return res.status(200).send(token);
+}
+
+async function checkToken(tokenKey) {
+  const token = await Token.findOne({ tokenKey: tokenKey });
+
+  if (token && token.deleted) {
+    return false;
+  }
+
+  return true;
+}
 
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
   deleteUser,
+  findUserByParams,
   register,
-  signIn
+  signIn,
+  signOut,
+  checkToken,
 };
