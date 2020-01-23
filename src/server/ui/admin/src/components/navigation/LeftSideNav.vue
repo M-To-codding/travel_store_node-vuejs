@@ -8,6 +8,18 @@
                 <v-list-item
                         class="list-item"
                         v-for="(item, i) in links"
+                        v-if="!item.isAdmin"
+                        :key="'path-'+i"
+                        @click="goToPage(item.path)">
+
+                    <v-icon :class="[item.icon]">{{ item.icon }}</v-icon>
+                    {{item.name}}
+
+                </v-list-item>
+                <v-list-item
+                        class="list-item"
+                        v-for="(item, i) in links"
+                        v-if="item.isAdmin && currentUser.is_admin"
                         :key="'path-'+i"
                         @click="goToPage(item.path)">
 
@@ -43,8 +55,9 @@
                 <v-list>
                     <v-list-item
                             v-for="action in userActions"
+                            v-if="action.auth === auth"
                             :key="action.name"
-                            @click="goToPage(action.path)">
+                            @click="goToPage(action.path, action.name)">
                         <v-list-item-title>{{ action.name }}</v-list-item-title>
                     </v-list-item>
                 </v-list>
@@ -57,34 +70,77 @@
 
 
 <script>
-    import Vuetify from 'vuetify';
+  import Vuetify from 'vuetify';
 
-    export default {
-        vuetify: new Vuetify({
-            theme: {dark: true},
-        }),
+  const axios = require('axios');
+  import auth from './../../actions/auth';
 
-        data: () => ({
-            drawer: null,
-            model: 1,
-            userActions: [{name: 'sign in', path: '/sign-in'},{name: 'sign up', path: '/sign-up'}, {name: 'sign out', path: '/sign-out'}]
 
-        }),
-        methods: {
-            goToPage(path) {
-                this.drawer = !this.drawer;
-                this.$router.push(path);
-            }
+  export default {
+    vuetify: new Vuetify({
+      theme: { dark: true },
+    }),
+
+    data: () => ({
+      drawer: null,
+      model: 1,
+      userActions: [
+        {
+          name: 'sign in',
+          path: '/sign-in',
+          auth: false
         },
-        props: {
-            source: String,
-            links: Array,
-            currentPageTitle: String
+        {
+          name: 'sign up',
+          path: '/sign-up',
+          auth: false
         },
-        components: {
+        {
+          name: 'sign out',
+          path: '/sign-out',
+          auth: true
         },
+      ]
 
-    }
+    }),
+
+    props: {
+      currentUser: Object,
+      source: String,
+      links: Array,
+      currentPageTitle: String,
+      auth: Boolean,
+      isAuthorized: Function,
+    },
+
+    methods: {
+      checkAuth() {
+        if (!this.isAuthorized()) {
+          this.$router.push('/sign-in');
+        } else {
+          // this.$router.push( '/sign-in');
+        }
+      },
+
+      goToPage(path, name) {
+        if (name === 'sign out') {
+          this.signOut();
+        } else {
+          this.drawer = !this.drawer;
+          this.$router.push(path);
+        }
+      },
+
+      signOut() {
+        auth.signOut(axios).then(() => {
+          this.checkAuth();
+        });
+
+      }
+    },
+    components: {},
+
+  }
 </script>
 
 <style scoped>
