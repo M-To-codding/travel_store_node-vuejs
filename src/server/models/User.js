@@ -1,4 +1,4 @@
-module.exports = (mongoose, uniqueValidator) => {
+module.exports = (mongoose) => {
 
   let UserSchema = new mongoose.Schema({
       name: {
@@ -25,9 +25,7 @@ module.exports = (mongoose, uniqueValidator) => {
       timestamps: true
     });
 
-  // UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
-
 
   mongoose.model('User', UserSchema);
 
-}
+};

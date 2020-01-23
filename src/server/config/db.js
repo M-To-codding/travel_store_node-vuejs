@@ -17,5 +17,6 @@ module.exports = (mongoose) => {
     db.once('open', () => console.log('db connected!'));
 
     require('./../models/User')(mongoose);
+    require('./../models/Token')(mongoose);
 
 }
