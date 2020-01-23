@@ -1,23 +1,29 @@
-module.exports = (mongoose)=>{
-    // const User = require('./../models/User');
+const bcrypt = require('bcrypt');
+const dbActions = require('./../services/db/actions');
 
-    const User = mongoose.model('User');
+module.exports = async (mongoose) => {
 
-    const user = new User({
-        name: 'Admin',
-        email: 'admin@gmail.com',
-        role: 'admin',
-        password: 'admin'
-    })
+  const User = await mongoose.model('User');
 
-    user.save((err)=>{
-        mongoose.disconnect();
+  const salt = await bcrypt.genSalt(10);
+  let password = await bcrypt.hash('admin', salt);
 
-        if(err) {
-            return console.error(err);
-        }
+  const user = new User({
+    name: 'Admin',
+    email: 'admin@gmail.com',
+    role: 'admin',
+    password: password,
+    isAdmin: true
+  })
 
-        console.log('Saved', user);
+  await  user.save((err) => {
+    mongoose.disconnect();
 
-    })
+    if (err) {
+      return console.error(err);
+    }
+
+    console.log('Saved', user);
+
+  })
 }
