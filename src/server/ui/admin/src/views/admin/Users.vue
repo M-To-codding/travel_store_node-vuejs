@@ -1,121 +1,137 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-
   <v-container
-      fluid
-      justify="center"
-      style="padding-top: 50px;"
+    fluid
+    justify="center"
+    style="padding-top: 90px;"
   >
 
-    <v-row justify="center">
-      <h1 class="title">Users</h1>
-    </v-row>
+    <v-card>
+      <v-tabs vertical>
+        <v-tab>
+          <v-icon left>mdi-account-group</v-icon>
+          Users
+        </v-tab>
+        <v-tab>
+          <v-icon left>mdi-chart-bar</v-icon>
+          Statistics
+        </v-tab>
 
-    <v-data-table
-        :headers="headers"
-        :items="usersData"
-        :items-per-page="5"
-        class="elevation-1"
-        item-key="id"
-    >
+        <v-tab-item>
+          <v-data-table
+            :headers="headers"
+            :items="usersData"
+            :items-per-page="5"
+            class="elevation-1"
+            item-key="id"
+          >
 
-      <template v-slot:top>
-        <v-toolbar flat dark>
-          <v-toolbar-title>All Users</v-toolbar-title>
-          <v-divider
-              class="mx-4"
-              inset
-              vertical
-          ></v-divider>
-          <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on }">
-              <v-btn class="mx-2" fab light small color="white" v-on="on">
-                <v-icon dark>mdi-plus</v-icon>
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="headline">{{ popupTitle }}</span>
-              </v-card-title>
-
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                          ref="name"
-                          v-model="editedItem.name"
-                          :rules="fieldsValidation.name"
-                          label="User name"
-                          required></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                          ref="email"
-                          v-model="editedItem.email"
-                          :rules="fieldsValidation.email"
-                          label="User email"
-                          required></v-text-field>
-                    </v-col>
-<!--                    <v-col cols="12" sm="6" md="4">-->
-<!--                      <v-text-field-->
-<!--                          ref="email"-->
-<!--                          v-model="editedItem.password"-->
-<!--                          :rules="fieldsValidation.password"-->
-<!--                          label="User password"-->
-<!--                          required></v-text-field>-->
-<!--                    </v-col>-->
-<!--                    <v-col cols="12" sm="6" md="4">-->
-
-                      <v-select
-                          ref="role"
-                          v-model="editedItem.role"
-                          :items="roles"
-                          label="Select role"
-                          :rules="fieldsValidation.role"
-                      ></v-select>
-
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions>
+            <template v-slot:top>
+              <v-toolbar flat dark>
+                <v-toolbar-title>All Users</v-toolbar-title>
+                <v-divider
+                  class="mx-4"
+                  inset
+                  vertical
+                ></v-divider>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                <v-btn color="blue darken-1" text @click="saveUser">Save</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
-      <template v-slot:item.action="{ item }">
+                <v-dialog v-model="dialog" max-width="500px">
+                  <template v-slot:activator="{ on }">
+                    <v-btn class="mx-2" fab light small color="white" v-on="on">
+                      <v-icon dark>mdi-plus</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">{{ popupTitle }}</span>
+                    </v-card-title>
 
-        <v-btn
-            class="mx-2"
-            fab light small
-            color="white"
-            @click="editUser(item)">
-          <v-icon dark>mdi-pencil</v-icon>
-        </v-btn>
+                    <v-card-text>
+                      <v-container>
+                        <v-row>
+                          <v-col cols="12" sm="6" md="4">
+                            <v-text-field
+                              ref="name"
+                              v-model="editedItem.name"
+                              :rules="fieldsValidation.name"
+                              label="User name"
+                              required></v-text-field>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="4">
+                            <v-text-field
+                              ref="email"
+                              v-model="editedItem.email"
+                              :rules="fieldsValidation.email"
+                              label="User email"
+                              required></v-text-field>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="4" v-if="editedIndex <= -1">
+                            <v-text-field
+                              ref="email"
+                              v-model="editedItem.password"
+                              :rules="fieldsValidation.password"
+                              label="User password"
+                              required></v-text-field>
+                          </v-col>
+                          <v-col cols="12" sm="6" md="4">
+
+                            <v-select
+                              ref="role"
+                              v-model="editedItem.role"
+                              :items="roles"
+                              label="Select role"
+                              :rules="fieldsValidation.role"
+                            ></v-select>
+
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                    </v-card-text>
+
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+                      <v-btn color="blue darken-1" text @click="saveUser">Save</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-toolbar>
+            </template>
+            <template v-slot:item.action="{ item }">
+
+              <v-btn
+                class="mx-2"
+                fab light small
+                color="white"
+                @click="editUser(item)">
+                <v-icon dark>mdi-pencil</v-icon>
+              </v-btn>
 
 
-        <v-btn
-            class="mx-2"
-            fab light small
-            color="white"
-            @click="deleteUser(item)">
-          <v-icon dark>mdi-delete</v-icon>
-        </v-btn>
+              <v-btn
+                class="mx-2"
+                fab light small
+                color="white"
+                @click="deleteUser(item)">
+                <v-icon dark>mdi-delete</v-icon>
+              </v-btn>
 
-      </template>
+            </template>
 
-    </v-data-table>
+          </v-data-table>
+
+        </v-tab-item>
+        <v-tab-item>
+          <UsersStatisticsChart :users="users"/>
+        </v-tab-item>
+      </v-tabs>
+    </v-card>
   </v-container>
+
 </template>
 
 <script>
   import userCRUD from '../../actions/userCRUD';
+  import UsersStatisticsChart from '../../components/UsersStatisticsChart';
 
   const axios = require('axios');
 
@@ -162,7 +178,7 @@
           registered: new Date(),
           // password: ''
         },
-        sendItem:{},
+        sendItem: {},
         dialog: false,
         editedIndex: -1,
         roles: ['author', 'admin'],
@@ -177,7 +193,7 @@
       }
     },
 
-    props:{
+    props: {
       currentUser: Object
     },
 
@@ -209,11 +225,11 @@
         this.users.forEach((user, index) => {
           let options = {};
 
-          if(user.isAdmin|| user.role === 'admin') {
-            user.isAdmin = true;
-            this.adminExists = true;
-            this.roles = ['author'];
-          }
+          // if(user.isAdmin|| user.role === 'admin') {
+          //   user.isAdmin = true;
+          //   this.adminExists = true;
+          //   this.roles = ['author'];
+          // }
 
           this.editedItem.index = index + 1;
           options.index = index + 1;
@@ -225,7 +241,7 @@
           options.registered = user.createdAt;
 
 
-          if(this.currentUser._id === user._id) {
+          if (this.currentUser._id === user._id) {
             return;
           }
 
@@ -278,14 +294,14 @@
           return;
         }
 
+        if (this.editedItem.role === 'admin') {
+          this.editedItem.isAdmin = true;
+        } else {
+          this.editedItem.isAdmin = false;
+        }
+
         if (this.editedIndex > -1) {
           Object.assign(this.usersData[this.editedIndex], this.editedItem);
-
-          if(this.editedItem.role === 'admin') {
-            this.editedItem.isAdmin = true;
-          } else {
-            this.editedItem.isAdmin = false;
-          }
 
           userCRUD.updateUser(axios, this.editedItem).then((res) => {
             this.users = res;
@@ -302,7 +318,7 @@
           });
         }
 
-          // this.sendItem = {};
+        // this.sendItem = {};
 
         this.close();
       },
@@ -341,7 +357,12 @@
         })
 
       }
-    }
+    },
+
+    components: {
+      UsersStatisticsChart
+    },
+
   }
 </script>
 
