@@ -130,10 +130,11 @@
 </template>
 
 <script>
+  const axios = require('axios');
+  let moment = require('moment');
+
   import userCRUD from '../../actions/userCRUD';
   import UsersStatisticsChart from '../../components/UsersStatisticsChart';
-
-  const axios = require('axios');
 
   export default {
     name: "Users",
@@ -162,7 +163,7 @@
           {
             text: 'Registered', value: 'registered',
           },
-          { text: 'Actions', value: 'action', sortable: false },
+          {text: 'Actions', value: 'action', sortable: false},
         ],
         usersData: [],
         editedItem: {
@@ -238,12 +239,12 @@
           options.name = user.name;
           options.email = user.email;
           // options.password = user.password;
-          options.registered = user.createdAt;
+          options.registered = moment(user.createdAt).format('l');
 
 
-          if (this.currentUser._id === user._id) {
-            return;
-          }
+          // if (this.currentUser._id === user._id) {
+          //   return;
+          // }
 
           this.usersData.push(options);
         })
