@@ -19,7 +19,8 @@ module.exports = (mongoose) => {
       password: String,
       image: String,
       role: String,
-      isAdmin: Boolean
+      isAdmin: Boolean,
+      chartData: Object
     },
     {
       timestamps: true

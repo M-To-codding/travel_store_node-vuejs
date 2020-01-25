@@ -25,12 +25,18 @@ let getAllUsers = (req, res) => {
 };
 
 let createUser = async (req, res, signed) => {
+
   const data = {
     name: req.body.name,
     role: req.body.role || 'author',
     email: req.body.email,
     password: req.body.password,
-    isAdmin: req.body.isAdmin
+    isAdmin: req.body.isAdmin,
+    chartData: {
+      sales: Math.random() * 100,
+      expenses: Math.random() * 100,
+      profit: Math.random() * 100,
+    }
   }
 
   const { error } = validateUser(data);
@@ -76,7 +82,8 @@ let createUser = async (req, res, signed) => {
 };
 
 let updateUser = (req, res) => {
-  User.updateOne({ _id: req.params.id }, req.body, function (err, result) {
+  let user = req.body;
+  User.updateOne({ _id: req.params.id }, user, function (err, result) {
 
     if (err) {
       return console.error(err);
