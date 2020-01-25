@@ -130,10 +130,12 @@
 </template>
 
 <script>
+  const axios = require('axios');
+
   import userCRUD from '../../actions/userCRUD';
   import UsersStatisticsChart from '../../components/UsersStatisticsChart';
 
-  const axios = require('axios');
+  let moment = require('moment');
 
   export default {
     name: "Users",
@@ -230,6 +232,8 @@
           //   this.adminExists = true;
           //   this.roles = ['author'];
           // }
+
+          user.createdAt = moment(user.createdAt).format('l');
 
           this.editedItem.index = index + 1;
           options.index = index + 1;

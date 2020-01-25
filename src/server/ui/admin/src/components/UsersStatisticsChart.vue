@@ -17,7 +17,6 @@
 <script>
   import { GChart } from 'vue-google-charts';
 
-  let moment = require('moment');
 
   export default {
     name: 'UsersStatistics',
@@ -26,47 +25,43 @@
       return {
         usersData: [],
         chartData: [
-          ['year', 'month'],
+          ['Name', 'Sales', 'Expenses', 'Profit'],
         ],
         chartOptions: {
-          title: 'Users registration statistics',
+          title: 'Users statistics',
           subtitle: 'day month, year',
           description: 'day month, year',
         },
         dates: {
           year: [],
           month: [],
+          monthYear: [],
         }
 
       }
     },
 
     mounted() {
-      this.prepareUsersData();
+      if (this.users && this.users.length > 0) {
+        this.prepareUsersData();
+      }
     },
 
     methods: {
       prepareUsersData() {
+        console.log('this.chartData', this.chartData, this.users)
         // this.usersData = this.users;
         this.users.forEach((user, index) => {
-          this.parseDate(user.registered);
-        })
-        this.dates.year = this.checkItems(this.dates.year);
-        this.dates.month = this.checkItems(this.dates.year);
+
+          if (user.chartData) {
+            this.chartData.push(
+              [user.name, user.chartData.sales, user.chartData.expenses, user.chartData.profit]
+            )
+          }
+        });
+
 
       },
-
-      parseDate(date) {
-        let year,
-          month,
-          formattedDate = moment(date).format('l');
-
-        month = formattedDate.substring(0, formattedDate.indexOf('/'));
-        year = formattedDate.substring(formattedDate.indexOf("/") + 4);
-
-        console.log('formattedDate', formattedDate, month, year);
-      },
-
 
     },
 
