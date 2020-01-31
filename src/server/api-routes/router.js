@@ -2,6 +2,7 @@ module.exports = function (app, db) {
     const router = require('express').Router();
     const dbActions = require('./../services/db/actions');
     const {auth} = require('./../services/auth');
+    const {exportCsvData, importCsvData} = require('./../services/csv/csv-service');
 
 
     router.get("/", (req, res) => {
@@ -23,6 +24,10 @@ module.exports = function (app, db) {
 
     router.post('/sign-in', auth);
     router.post('/sign-out', dbActions.signOut);
+
+
+    router.get('/users/export-csv', exportCsvData);
+    router.post('/users/import-csv', importCsvData);
 
     return router;
 };
