@@ -120,15 +120,6 @@ async function register(req, res) {
 
 };
 
-async function signIn(req, res) {
-  const user = await User.findOne({ _id: req.user._id }).select('-password');
-  User.methods.generateAuthToken = function () {
-    const token = jwt.sign({ _id: this._id }, config.get('privateKey')); //get the private key from the config file -> environment variable
-    return token;
-  }
-  res.send(user);
-};
-
 async function findUserByParams(params) {
   return await User.findOne(params);
 }
@@ -151,6 +142,17 @@ async function checkToken(tokenKey) {
   return true;
 }
 
+async function insertUsers(data) {
+  return await User.insertMany(data, (err, docs)=>{
+    if (err) {
+      console.error(err);
+    }
+
+    // res.status(200).send(docs);
+  });
+}
+
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -158,7 +160,7 @@ module.exports = {
   deleteUser,
   findUserByParams,
   register,
-  signIn,
   signOut,
   checkToken,
+  insertUsers,
 };
