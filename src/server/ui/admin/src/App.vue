@@ -46,6 +46,12 @@
             icon: 'mdi-view-dashboard',
             isAdmin: true
           },
+          {
+            name: 'Data transfer',
+            path: '/data-transfer',
+            icon: 'mdi-view-dashboard',
+            isAdmin: true
+          },
         ]
       }
     },
