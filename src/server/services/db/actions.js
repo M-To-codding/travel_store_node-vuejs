@@ -142,13 +142,16 @@ async function checkToken(tokenKey) {
   return true;
 }
 
-async function insertUsers(data) {
-  return await User.insertMany(data, (err, docs)=>{
+async function insertUsers(req, res, data) {
+  await User.insertMany(data, (err, docs)=>{
+
     if (err) {
-      console.error(err);
+      console.log('error', err);
+      return res.status(400).send({ message: 'Csv file contains incorrect data'});
+    } else {
+      res.status(200).send('Success');
     }
 
-    // res.status(200).send(docs);
   });
 }
 
