@@ -1,11 +1,7 @@
 const express = require('express');
 const path = require('path');
-const Vue = require('vue');
 const renderer = require('vue-server-renderer');
-const HTMLStream = require('vue-ssr-html-stream');
 const bodyParser = require('body-parser');
-
-
 const mongoose = require('mongoose');
 
 
@@ -19,6 +15,7 @@ server.use(bodyParser.json());
 
 server.use(express.static(path.join(__dirname, './server/ui/admin/dist/')));
 server.use('/static', express.static(path.join(__dirname, './server/ui/admin/dist/')));
+server.use('/static', express.static(path.join(__dirname, './server/public/')));
 server.use((req, res, next)=>{
     res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -44,13 +41,10 @@ const bundleRenderer = renderer.createBundleRenderer(
     }
 );
 
-
-
 const router = require('./server/api-routes/router')(server);
 
 server.use('/api/v1/admin', router);
 // server.use('/api/v1/client', router);
-
 
 server.get('/api/v1/admin/*', (req, res) => {
 
@@ -64,7 +58,6 @@ server.get('/api/v1/admin/*', (req, res) => {
     })
 
 })
-
 
 const port = process.env.PORT || 8080;
 
