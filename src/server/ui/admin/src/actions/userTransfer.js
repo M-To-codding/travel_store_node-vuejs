@@ -1,17 +1,20 @@
 const axios = require('axios');
 
 function importCsv(data) {
-  // const options = {
-  //   headers: { 'Content-type': 'multipart/form-data' },
-  // };
-  // eslint-disable-next-line no-console
-
   return axios
     .post('http://localhost:8080/api/v1/admin/users/import-csv', { data })
     .then((res) => {
       // eslint-disable-next-line no-console
       console.log('response', res);
       return res.data;
+    }).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.log('error', err.response);
+      if (err.response) {
+        return { error: err.response.data.message, status: err.response.status };
+      }
+
+      return err;
     });
 }
 
@@ -21,7 +24,16 @@ function exportCsv() {
     .then((res) => {
       // eslint-disable-next-line no-console
       console.log('response', res);
-      return res.data;
+      return { status: res.status, link: res.data.link };
+    })
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.log('error', err.response);
+      if (err.response) {
+        return { error: err.response.data.message, status: err.response.status };
+      }
+
+      return err;
     });
 }
 
