@@ -41,8 +41,8 @@ exports.exportCsvData = (req, res) => {
       })
       .pipe(writeStream);
 
-    console.log('__dirname', __dirname)
-    res.status(200).send({link: `http://localhost:8080/public/export/db_data.csv`});
+    console.log('__dirname', __dirname);
+    res.status(200).send({link: `file://${__dirname}./../../public/export/db_data.csv`});
   })
 };
 
