@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 
 const db = require('./server/config/db')(mongoose);
-// require('./server/scripts/create-admin')(mongoose);
+require('./server/scripts/create-admin')(mongoose);
 
 
 const server = express();
