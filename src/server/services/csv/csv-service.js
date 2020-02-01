@@ -7,6 +7,12 @@ const dbActions = require('./../../services/db/actions');
 
 
 exports.exportCsvData = (req, res) => {
+  var dir = './src/server/public/export';
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+
   const writeStream = fs.createWriteStream('./src/server/public/export/db_data.csv');
 
   User.find({}).lean().exec((err, docs) => {
@@ -49,7 +55,8 @@ exports.importCsvData = (req, res) => {
   let usersArr = [];
 
   parsedData.forEach((item) => {
-    if(item.email) {
+    if (item.email && item.name && item.createdAt &&
+      item.password && item.role) {
       let user = {
         name: item.name || 'Unnamed',
         email: item.email,
@@ -66,10 +73,12 @@ exports.importCsvData = (req, res) => {
       };
 
       usersArr.push(user);
+    } else  {
+      usersArr = null;
     }
   })
 
-  dbActions.insertUsers(usersArr);
+  dbActions.insertUsers(req, res, usersArr);
 
   // let csvData = [];
   // let csvStream = fastCsv
