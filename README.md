@@ -1,10 +1,20 @@
-Миграция на создания первого юзера
-Просмотр всех юзеров
-Добавление, редактирование и удаление юзеров
-Апи дока
-Разделение файлов и папок относительно https://blog.logrocket.com/the-perfect-architecture-flow-for-your-next-node-js-project/
-Добавить конфиг
-Добавить админку
-Настроить стайл гайд
-Написать комменты
-Заюзать gzip
+To run project: 
+
+  1. run server
+  
+    npm run express
+    
+  2. run admin panel
+  
+    > src/server/ui/admin
+    npm run ssr:serve
+    
+  3. go to 
+    
+      http://localhost:8000/
+     
+      or
+     
+     http://localhost:8080/
+     
+     
