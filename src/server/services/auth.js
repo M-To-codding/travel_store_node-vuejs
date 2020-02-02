@@ -19,7 +19,8 @@ exports.auth = async (req, res, next) => {
     return res.status(400).send({ message: 'Incorrect email or password.' });
   }
 
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
+  const validPassword = bcrypt.compare(req.body.password, user.password);
+
   if (!validPassword) {
     return res.status(400).send({ message: 'Incorrect email or password.' });
   }
