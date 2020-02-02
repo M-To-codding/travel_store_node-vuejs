@@ -1,8 +1,8 @@
 <template>
   <v-container
-    fluid
-    justify="center"
-    style="padding-top: 90px;"
+      fluid
+      justify="center"
+      style="padding-top: 90px;"
   >
 
     <v-row justify="center">
@@ -19,9 +19,9 @@
 
       <v-col cols="1" sm="6" md="2" justify="center">
         <h3 class="title">Export data</h3>
-        <v-btn large @click="exportData()">Generate csv file</v-btn>
-        <br>
-        <a v-if="fileLink"  target="_blank" v-bind:href="fileLink">Download csv file</a>
+        <a target="_blank" href="http://localhost:8080/api/v1/admin/users/export-csv">
+          <v-btn large>Generate csv file</v-btn>
+        </a>
       </v-col>
 
     </v-row>
@@ -41,7 +41,6 @@
       return {
         file: null,
         fileData: '',
-        exportedFile: null,
         parsedCsv: [],
         fileLink: null,
       }
@@ -106,35 +105,33 @@
         }
 
         userTransfer.importCsv(this.fileData)
-          .then((response) => {
-            console.log('response', response)
-            if (response.error) {
-              alert(response.error);
-            }
-            if (response.status === 500) {
-              alert('Server error');
-            }
-          });
-
-        // console.log('this.exportedFile', this.exportedFile);
+            .then((response) => {
+              console.log('response', response)
+              if (response.status === 200) {
+                alert(response.message);
+              }
+              if (response.status === 500) {
+                alert('Server error');
+              }
+            });
       },
 
       exportData() {
-        this.exportedFile = userTransfer.exportCsv()
-          .then((response) => {
-            console.log('response', response)
-            if (response.status === 200) {
-              alert('File was generated');
-              setTimeout(() => {
-                window.open(response.link);
-                // window.loadURL(response.link);
-                this.fileLink = response.link;
-              }, 1000)
-            }
-            if (response.error) {
-              alert(response.error);
-            }
-          });
+        userTransfer.exportCsv()
+            .then((response) => {
+              console.log('response', response)
+              if (response.status === 200) {
+                alert('File was generated');
+                setTimeout(() => {
+                  window.open(response.link);
+                  // window.loadURL(response.link);
+                  this.fileLink = response.link;
+                }, 1000)
+              }
+              if (response.error) {
+                alert(response.error);
+              }
+            });
       }
     },
   }
