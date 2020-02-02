@@ -46,7 +46,7 @@ let createUser = async (req, res, signed) => {
   let existedUser = await User.findOne({ email: data.email });
 
   if (existedUser) {
-    return res.status(400).send({ message: 'User already exists'});
+    return res.status(400).send({ message: 'User already exists' });
   } else {
 
     const user = new User(data);
@@ -67,9 +67,9 @@ let createUser = async (req, res, signed) => {
         deleted: false
       }).save();
 
-      if(signed) {
+      if (signed) {
         let userClone = user;
-         userClone.password = req.body.password;
+        userClone.password = req.body.password;
 
         res.header('x-auth-token', token).send(userClone);
       } else {
@@ -113,7 +113,7 @@ async function register(req, res) {
 
   let user = await User.findOne({ email: req.body.email });
   if (user) {
-    return res.status(400).send({ message: 'User already registered'});
+    return res.status(400).send({ message: 'User already registered' });
   }
 
   createUser(req, res, true);
@@ -143,13 +143,17 @@ async function checkToken(tokenKey) {
 }
 
 async function insertUsers(req, res, data) {
-  await User.insertMany(data, (err, docs)=>{
+  if (!data) {
+    return res.status(400).send({ message: 'Csv file contains incorrect data' });
+  }
+
+  await User.insertMany(data, (err, docs) => {
 
     if (err) {
       console.log('error', err);
-      return res.status(400).send({ message: 'Csv file contains incorrect data'});
+      return res.status(400).send({ message: 'Csv file contains incorrect data' });
     } else {
-      res.status(200).send('Success');
+      res.status(200).send({ message: 'Data exported successfully' });
     }
 
   });
