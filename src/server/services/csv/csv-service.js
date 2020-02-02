@@ -13,7 +13,8 @@ exports.exportCsvData = (req, res) => {
     fs.mkdirSync(dir);
   }
 
-  const writeStream = fs.createWriteStream('./src/server/public/export/db_data.csv');
+  let path = './src/server/public/export/db_data.csv';
+  const writeStream = fs.createWriteStream(path);
 
   User.find({}).lean().exec((err, docs) => {
     // mongoose.disconnect();
@@ -21,8 +22,6 @@ exports.exportCsvData = (req, res) => {
     docs.forEach((item) => {
       item.chartData = JSON.stringify(item.chartData);
     })
-
-    JSON.stringify(docs);
 
     if (docs && docs.length === 0) {
       console.log('users not found');
@@ -35,21 +34,17 @@ exports.exportCsvData = (req, res) => {
 
     console.log('docs', docs);
     fastCsv
-      .write(docs, { headers: true })
-      .on('finish', () => {
-        console.log('writed db_data.csv ')
-      })
-      .pipe(writeStream);
+        .write(docs, { headers: true })
+        .pipe(writeStream)
+        .on('finish', () => {
+          res.status(200).download(path);
+        });
 
-    console.log('__dirname', __dirname);
-    res.status(200).send({link: `file://${__dirname}./../../public/export/db_data.csv`});
   })
 };
 
 
 exports.importCsvData = (req, res) => {
-  // console.log('req.body', JSON.parse(req.body));
-  // console.log('req.body', req.body.data);
   // const readStream = fs.createReadStream('./src/server/public/db_data.csv');
   // const readStream = fs.createReadStream(JSON.parse(req.body.data));
   let parsedData = JSON.parse(req.body.data);
@@ -57,15 +52,21 @@ exports.importCsvData = (req, res) => {
 
   parsedData.forEach((item) => {
     if (item.email && item.name && item.createdAt &&
-      item.password && item.role) {
+        item.password && item.role && item.isAdmin) {
+      if (!usersArr) {
+        usersArr = [];
+      }
+
+      let isAdmin = typeof item.isAdmin == 'string' ? JSON.parse(item.isAdmin) : item.isAdmin
+
       let user = {
-        name: item.name || 'Unnamed',
+        name: item.name,
         email: item.email,
         password: item.password,
         role: item.role,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
-        isAdmin: item.isAdmin,
+        isAdmin: isAdmin,
         chartData: {
           sales: Math.random() * 100,
           expenses: Math.random() * 100,
@@ -74,8 +75,6 @@ exports.importCsvData = (req, res) => {
       };
 
       usersArr.push(user);
-    } else  {
-      usersArr = null;
     }
   })
 
