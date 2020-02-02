@@ -6,8 +6,9 @@ function importCsv(data) {
     .then((res) => {
       // eslint-disable-next-line no-console
       console.log('response', res);
-      return res.data;
-    }).catch((err) => {
+      return { status: res.status, message: res.data.message };
+    })
+    .catch((err) => {
       // eslint-disable-next-line no-console
       console.log('error', err.response);
       if (err.response) {
