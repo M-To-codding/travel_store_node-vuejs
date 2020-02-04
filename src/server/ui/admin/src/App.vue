@@ -43,14 +43,20 @@
           {
             name: 'Users',
             path: '/users',
-            icon: 'mdi-view-dashboard',
+            icon: 'mdi-account-group',
             isAdmin: true
           },
           {
             name: 'Data transfer',
             path: '/data-transfer',
-            icon: 'mdi-view-dashboard',
+            icon: 'mdi-file-upload-outline',
             isAdmin: true
+          },
+          {
+            name: 'Media',
+            path: '/media',
+            icon: 'mdi-library-video',
+            isAdmin: false
           },
         ]
       }

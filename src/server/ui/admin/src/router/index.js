@@ -5,6 +5,7 @@ import Dashboard from '../views/Dashboard.vue';
 import Users from '../views/admin/Users.vue';
 import SignUp from '../views/SignUp.vue';
 import SignIn from '../views/SignIn.vue';
+import Media from '../views/Media.vue';
 import DbUsersTransfer from '../views/admin/dbDataTransfer/DbUsersTransfer.vue';
 
 Vue.use(VueRouter);
@@ -35,6 +36,11 @@ export default function createRouter() {
       path: '/data-transfer',
       name: 'users-transfer',
       component: DbUsersTransfer,
+    },
+    {
+      path: '/media',
+      name: 'media',
+      component: Media,
     },
   ];
 
