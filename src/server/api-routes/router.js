@@ -3,6 +3,7 @@ module.exports = function (app, db) {
     const dbActions = require('./../services/db/actions');
     const {auth} = require('./../services/auth');
     const {exportCsvData, importCsvData} = require('./../services/csv/csv-service');
+    const {uploadFiles} = require('./../services/upload-files_controller');
 
 
     router.get("/", (req, res) => {
@@ -28,6 +29,9 @@ module.exports = function (app, db) {
 
     router.get('/users/export-csv', exportCsvData);
     router.post('/users/import-csv', importCsvData);
+
+
+    router.post('/file-upload', uploadFiles);
 
     return router;
 };
