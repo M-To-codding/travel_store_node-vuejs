@@ -26,12 +26,19 @@
             cols="7" sm="4" md="3">
 
 
-            <v-btn
-              :disabled="!valid"
-              color="success"
-              class="mr-4">
-              Upload image
-            </v-btn>
+            <form method="post" enctype="multipart/form-data">
+              <v-file-input name="files[]" enctype="multipart/form-data" accept="image/x-png,image/gif,image/jpeg"
+                            label="File input" ref="file"
+                            @change="handleFile"></v-file-input>
+              <v-btn
+                type="button"
+                :disabled="!valid"
+                color="success"
+                class="mr-4">
+                Upload image
+              </v-btn>
+
+            </form>
           </v-col>
 
         </v-row>
@@ -40,7 +47,17 @@
         <v-row>
           <v-col v-for="item in images" cols="5">
 
+            <v-row class="subheading paddingHorizontal20" justify="space-between">
+              <span>{{item.author}}</span>
+              <v-btn x-small
+                     color="secondary"
+                     @click="removeMediaItem(item.src)"
+                     dark>
+                X
+              </v-btn>
+            </v-row>
             <v-img
+              :key="item.src"
               :src="item.src"
               :lazy-src="item.src"
               aspect-ratio="1.7"
@@ -56,7 +73,6 @@
                 </v-row>
               </template>
             </v-img>
-            <div class="subheading">{{item.author}}</div>
           </v-col>
         </v-row>
 
@@ -97,8 +113,8 @@
     data() {
       return {
         images: [],
-        valid: true
-
+        valid: true,
+        fileUpload: null,
       }
     },
 
@@ -122,7 +138,24 @@
       ];
     },
 
-    methods: {}
+    methods: {
+      removeMediaItem(url) {
+        if (confirm('Confirm removing image: ' + url)) {
+          alert('Image removed');
+        }
+      },
+      handleFile(e) {
+        if (!e) {
+          return;
+        }
+
+        let that = this;
+        this.fileUpload = e;
+        const formData = new FormData();
+        formData.append('files[]', e);
+        console.log('file', e, formData);
+      },
+    },
   }
 </script>
 
@@ -134,5 +167,9 @@
   .centered-block {
     margin: auto;
     justify-content: center;
+  }
+
+  .paddingHorizontal20 {
+    padding: 0 20px;
   }
 </style>
