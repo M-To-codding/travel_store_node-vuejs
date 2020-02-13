@@ -1,15 +1,35 @@
+const multer = require('multer');
+
 exports.uploadFiles = (req, res) => {
-  let file = req.body.file;
-  let fileName = file.name;
+
+  console.log('file', req.body)
+  let filePath = '';
+  let fileName = '';
 
   const storage = multer.diskStorage({
-    destination: `./src/server/public/media/${req.body.fileType}`,
-    fileName: (req, file, callback)=>{
-      callback(null, `${file.fieldName}-${Date.now()}`)
+    destination: (req, file, callback)=>{
+      filePath = `./src/server/public/media/${file.fieldname}`;
+
+      console.log('dest', file)
+      callback(null, filePath);
+    },
+    filename: (req, file, callback)=>{
+      fileName = `img-${Date.now()}.${file.mimetype.split("/").pop()}`;
+
+      callback(null, fileName);
     }
   });
 
-  let upload = multer({storage: storage});
+  let upload = multer({storage: storage}).single('images');
+
+  upload(req, res, (err)=>{
+    if(err) {
+      console.log(err, 'field', err.field);
+      return res.status(400).send({ message: 'Incorrect file' });
+    }
+
+    return res.status(200).send(filePath)
+  });
 
 
 

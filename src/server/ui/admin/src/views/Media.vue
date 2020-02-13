@@ -27,13 +27,15 @@
 
 
             <form method="post" enctype="multipart/form-data">
-              <v-file-input name="files[]" enctype="multipart/form-data" accept="image/x-png,image/gif,image/jpeg"
-                            label="File input" ref="file"
+              <v-file-input name="image" enctype="multipart/form-data" accept="image/x-png,image/gif,image/jpeg"
+                            label="Image input" ref="image"
+                            prepend-icon="mdi-camera"
                             @change="handleFile"></v-file-input>
               <v-btn
                 type="button"
                 :disabled="!valid"
                 color="success"
+                @click="uploadFile"
                 class="mr-4">
                 Upload image
               </v-btn>
@@ -108,6 +110,8 @@
 </template>
 
 <script>
+  import uploadMedia from './../actions/uploadMedia';
+
   export default {
     name: "Media",
     data() {
@@ -152,9 +156,23 @@
         let that = this;
         this.fileUpload = e;
         const formData = new FormData();
-        formData.append('files[]', e);
-        console.log('file', e, formData);
+        this.fileUpload = formData.append('image', e);
+        console.log('img', formData, e.file);
+
+        for (var [key, value] of  formData.entries()) {
+          console.log('file', key, value);
+        }
+         uploadMedia.uploadFile(formData);
+
       },
+
+      async uploadFile() {
+        console.log('uploadFile', this.fileUpload);
+       await uploadMedia.uploadFile(this.fileUpload);
+        // uploadMedia.uploadFile(formData).then(() => {
+        //   this.uploadFile();
+        // })
+      }
     },
   }
 </script>
