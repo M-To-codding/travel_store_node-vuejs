@@ -3,6 +3,8 @@ const path = require('path');
 const renderer = require('vue-server-renderer');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+// var multer = require('multer');
+// var upload = multer();
 
 
 const db = require('./server/config/db')(mongoose);
@@ -15,10 +17,16 @@ server.use(bodyParser.json());
 
 server.use(express.static(path.join(__dirname, './server/ui/admin/dist/')));
 server.use('/static', express.static(path.join(__dirname, './server/ui/admin/dist/')));
-server.use('/static', express.static(path.join(__dirname, './server/public/')));
+
+// Enables to load files from public folder.
+// Example:
+//   File is located in 'public/media/images/img1.jpg'.
+//   To load this go to URL 'http://<host>:<port>/media/images/img1.jpg'
+server.use(express.static(path.join(__dirname, './server/public/')));
+
 server.use((req, res, next)=>{
     res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
     next();
 })
