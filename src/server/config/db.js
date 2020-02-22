@@ -18,5 +18,6 @@ module.exports = (mongoose) => {
 
     require('./../models/User')(mongoose);
     require('./../models/Token')(mongoose);
+    require('./../models/MediaFile')(mongoose);
 
 }
