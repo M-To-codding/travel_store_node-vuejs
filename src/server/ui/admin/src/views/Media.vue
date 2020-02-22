@@ -13,7 +13,7 @@
         <v-icon left>mdi-file-image-outline</v-icon>
         Images
       </v-tab>
-      <v-tab>
+      <v-tab @click="getAllVideos()">
         <v-icon left>mdi-file-video-outline</v-icon>
         Video
       </v-tab>
@@ -35,7 +35,7 @@
                 type="button"
                 :disabled="!valid"
                 color="success"
-                @click="uploadFile"
+                @click="uploadImage"
                 class="mr-4">
                 Upload image
               </v-btn>
@@ -46,14 +46,17 @@
         </v-row>
 
 
+        <v-row justify="center" v-if="!images">
+          <h5>Images not found</h5>
+        </v-row>
         <v-row>
-          <v-col v-for="item in images" cols="5">
+          <v-col v-for="item in images" cols="4">
 
             <v-row class="subheading paddingHorizontal20" justify="space-between">
               <span>{{item.author}}</span>
               <v-btn x-small
                      color="secondary"
-                     @click="removeMediaItem(item.src)"
+                     @click="removeMediaItem(item.id, item.fileName, item.fileType)"
                      dark>
                 X
               </v-btn>
@@ -75,6 +78,7 @@
                 </v-row>
               </template>
             </v-img>
+            <p>{{item.createdAt}}</p>
           </v-col>
         </v-row>
 
@@ -87,13 +91,21 @@
             class="centered-block"
             cols="7" sm="4" md="3">
 
+            <form method="post" enctype="multipart/form-data">
+              <v-file-input name="video" enctype="multipart/form-data" accept="video/*"
+                            label="Video input" ref="video"
+                            prepend-icon="mdi-video"
+                            @change="handleFile"></v-file-input>
+              <v-btn
+                type="button"
+                :disabled="!valid"
+                color="success"
+                @click="uploadImage"
+                class="mr-4">
+                Upload video
+              </v-btn>
 
-            <v-btn
-              :disabled="!valid"
-              color="success"
-              class="mr-4">
-              Upload video
-            </v-btn>
+            </form>
           </v-col>
         </v-row>
 
@@ -110,67 +122,118 @@
 </template>
 
 <script>
-  import uploadMedia from './../actions/uploadMedia';
+  let moment = require('moment');
+
+  import mediaCRUD from './../actions/mediaCRUD';
 
   export default {
     name: "Media",
     data() {
       return {
-        images: [],
+        images: null,
+        videos: null,
         valid: true,
         fileUpload: null,
       }
     },
 
     mounted() {
-      this.images = [
-        {
-          src: require('./../../../../public/media/images/img1.jpg'),
-          author: 'Asd',
-          date: new Date()
-        },
-        {
-          src: require('./../../../../public/media/images/img2.jpg'),
-          author: 'Qwe',
-          date: new Date()
-        },
-        {
-          src: require('./../../../../public/media/images/img3.jpg'),
-          author: 'Qdmin',
-          date: new Date()
-        },
-      ];
+      this.getAllImages();
     },
 
     methods: {
-      removeMediaItem(url) {
-        if (confirm('Confirm removing image: ' + url)) {
-          alert('Image removed');
+      getAllImages() {
+        mediaCRUD.getAllImages().then((data) => {
+
+          if (data.message) {
+            return;
+          }
+
+          this.images = [];
+
+          data.forEach((item) => {
+
+            let image = {
+              id: item._id,
+              fileName: item.fileName,
+              fileType: item.fileType,
+              author: item.authorName,
+              src: 'http://localhost:8080/media/images/' + item.fileName,
+              createdAt: moment(item.createdAt).format('l-HH:mm')
+            };
+
+            console.log('image', image)
+
+            this.images.unshift(image);
+          })
+        })
+      },
+
+     async removeMediaItem(id, name, type) {
+
+        console.log('type', type)
+        if (confirm('Confirm removing image: ' + name)) {
+
+          await mediaCRUD.deleteFile(id).then((res) => {
+            this.getAllImages();
+            // if(type == 'images') {
+            //   this.getAllImages();
+            // } else {
+            //   this.getAllVideos();
+            // }
+          })
+
         }
       },
+
       handleFile(e) {
         if (!e) {
           return;
         }
+        let file = e;
+        file.author = 'current author';
+        file.dataType = 'image';
 
-        let that = this;
-        this.fileUpload = e;
-        const formData = new FormData();
-        this.fileUpload = formData.append('image', e);
-        console.log('img', formData, e.file);
-
-        for (var [key, value] of  formData.entries()) {
-          console.log('file', key, value);
-        }
-         uploadMedia.uploadFile(formData);
+        this.fileUpload = new FormData();
+        this.fileUpload.append('images', file);
 
       },
 
-      async uploadFile() {
-        console.log('uploadFile', this.fileUpload);
-       await uploadMedia.uploadFile(this.fileUpload);
-        // uploadMedia.uploadFile(formData).then(() => {
-        //   this.uploadFile();
+      uploadImage() {
+        if (!this.fileUpload) {
+          return alert('File must be attached')
+        }
+
+        mediaCRUD.uploadImage(this.fileUpload).then((res) => {
+          this.getAllImages();
+        });
+
+      },
+
+      getAllVideos() {
+        // mediaCRUD.getAllVideos().then((data) => {
+        //
+        //   if (data.message) {
+        //     return;
+        //   }
+        //
+        //   this.images = [];
+        //
+        //   data.forEach((item) => {
+        //
+        //     let video = {
+        //       id: item._id,
+        //       fileName: item.fileName,
+        //       fileType: item.fileType,
+        //       author: item.authorName,
+        //       src: 'http://localhost:8080/media/video/' + item.fileName,
+        //       createdAt: moment(item.createdAt).format('l-HH:mm')
+        //     };
+        //
+        //     console.log('video', video)
+        //
+        //     this.videos.unshift(video);
+        //   })
         // })
       }
     },
