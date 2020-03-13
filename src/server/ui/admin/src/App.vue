@@ -58,6 +58,12 @@
             icon: 'mdi-library-video',
             isAdmin: false
           },
+          {
+            name: 'Invoice-test',
+            path: '/invoice',
+            icon: 'mdi-credit-card',
+            isAdmin: false
+          },
         ]
       }
     },

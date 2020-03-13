@@ -7,6 +7,7 @@ import SignUp from '../views/SignUp.vue';
 import SignIn from '../views/SignIn.vue';
 import Media from '../views/Media.vue';
 import DbUsersTransfer from '../views/admin/dbDataTransfer/DbUsersTransfer.vue';
+import InvoiceTest from '../views/admin/InvoiceTest.vue';
 
 Vue.use(VueRouter);
 
@@ -41,6 +42,11 @@ export default function createRouter() {
       path: '/media',
       name: 'media',
       component: Media,
+    },
+    {
+      path: '/invoice',
+      name: 'invoice',
+      component: InvoiceTest,
     },
   ];
 
