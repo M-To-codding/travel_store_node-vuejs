@@ -1,20 +1,20 @@
-import { loadAsyncComponents } from '@akryum/vue-cli-plugin-ssr/client'
+import { loadAsyncComponents } from '@akryum/vue-cli-plugin-ssr/client';
 
-import { createApp } from './main'
+import { createApp } from './main';
 
 createApp({
-  async beforeApp ({
-    router
+  async beforeApp({
+    router,
   }) {
-    await loadAsyncComponents({ router })
+    await loadAsyncComponents({ router });
   },
 
-  afterApp ({
+  afterApp({
     app,
     router,
   }) {
     router.onReady(() => {
-      app.$mount('#app')
-    })
-  }
-})
+      app.$mount('#app');
+    });
+  },
+});
